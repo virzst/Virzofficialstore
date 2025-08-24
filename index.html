@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Payment Virz official store</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body, html {
+    height: 100%;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+    color: #f5deb3;
+    overflow: hidden;
+  }
+  #loadingScreen {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, #000, #1a1a1a);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 1s ease;
+  }
+  .spinner {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 14px solid #443a1f;
+    border-top: 14px solid #f5deb3;
+    animation: spin 1.6s linear infinite;
+    box-shadow: 0 0 30px #f5deb3aa;
+    margin-bottom: 30px;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .loading-text {
+    font-size: 2.8rem;
+    font-weight: 900;
+    letter-spacing: 5px;
+    color: #f5deb3;
+    text-shadow: 0 0 15px #f5deb3cc;
+    margin-bottom: 20px;
+    animation: flicker 3s ease-in-out infinite;
+  }
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .progress-bar {
+    width: 260px;
+    height: 16px;
+    background: #443a1f44;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: inset 0 0 20px #f5deb3aa;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #f5deb3, #bfa76a);
+    border-radius: 16px;
+    animation: loadProgress 4s forwards;
+    box-shadow: 0 0 25px #f5deb3cc;
+  }
+  @keyframes loadProgress {
+    0% { width: 0; }
+    100% { width: 100%; }
+  }
+  #mainContent {
+    display: none;
+    min-height: 100vh;
+    background: #121212;
+    padding: 50px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .container {
+    max-width: 480px;
+    width: 100%;
+    background: #1f2937cc;
+    border-radius: 30px;
+    padding: 48px 36px;
+    box-shadow: 0 0 50px #bfa76aaa;
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+  }
+  h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #f5deb3;
+    text-align: center;
+    letter-spacing: 6px;
+    text-shadow: 0 0 25px #bfa76a99;
+  }
+  .pay-desc {
+    font-size: 1.2rem;
+    color: #d4af37cc;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .pay-btn {
+    background: linear-gradient(135deg, #bfa76a, #f5deb3);
+    border: none;
+    border-radius: 24px;
+    padding: 20px 30px;
+    font-weight: 900;
+    font-size: 1.4rem;
+    color: #1a1a1a;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 30px #bfa76aaa;
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+  }
+  .pay-btn:hover {
+    background: linear-gradient(135deg, #f5deb3, #bfa76a);
+    box-shadow: 0 12px 40px #f5deb3cc;
+  }
+  .arrow {
+    font-weight: 900;
+    font-size: 1.8rem;
+    color: #1a1a1a;
+    transition: transform 0.4s ease;
+  }
+  .arrow.rotate { transform: rotate(90deg); }
+  .details {
+    background: #2f2f2fcc;
+    border-radius: 24px;
+    padding: 0 32px;
+    font-size: 1.25rem;
+    color: #f5deb3;
+    user-select: all;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s ease, padding 0.6s ease;
+    box-shadow: inset 0 0 30px #bfa76a99;
+  }
+  .details.show {
+    max-height: 1000px;
+    padding: 24px 32px;
+  }
+  .link-btn {
+    background: #1a1a1a;
+    border: 3px solid #bfa76a;
+    border-radius: 16px;
+    color: #bfa76a;
+    font-weight: 900;
+    padding: 10px 22px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+  }
+  .link-btn:hover {
+    background: #bfa76a;
+    color: #1a1a1a;
+  }
+  .qris-img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 15px auto 0;
+    border-radius: 30px;
+    box-shadow: 0 0 60px #bfa76aaa;
+  }
+  @media (max-width: 600px) {
+    .container { padding: 36px 28px; }
+    h1 { font-size: 2.2rem; }
+    .pay-btn { font-size: 1.2rem; padding: 18px 24px; }
+    .details { font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<audio id="vibesAudio" src="https://files.catbox.moe/2q7jcu.m4a" loop></audio>
+<button id="startAudio" style="position:fixed;top:0;left:0;width:100%;height:100%;opacity:0;z-index:9999;border:none;background:none;"></button>
+
+<div id="loadingScreen">
+  <div class="spinner"></div>
+  <div class="loading-text">Memuat...</div>
+  <div class="progress-bar"><div class="progress-fill"></div></div>
+</div>
+
+<div id="mainContent">
+  <div class="container">
+    <h1>METODE PEMBAYARAN</h1>
+    <div class="pay-desc">Klik tombol untuk lihat nomor atau QRIS pembayaran.</div>
+
+    <button class="pay-btn" data-target="danaDetails">Dana <span class="arrow">&#9654;</span></button>
+    <div class="details" id="danaDetails">Nomor: 088989929756</div>
+
+    <button class="pay-btn" data-target="ovoDetails">OVO <span class="arrow">&#9654;</span></button>
+    <div class="details" id="ovoDetails">Nomor: Tf ke dana/gopay/minta qris ke admin</div>
+
+    <button class="pay-btn" data-target="gopayDetails">GoPay <span class="arrow">&#9654;</span></button>
+    <div class="details" id="gopayDetails">Nomor: 0881036589075</div>
+
+    <button class="pay-btn" data-target="qrisDetails">QRIS <span class="arrow">&#9654;</span></button>
+    <div class="details" id="qrisDetails"><img src="https://files.catbox.moe/479r7v.jpg" alt="QRIS" class="qris-img" /></div>
+
+    <button class="pay-btn" data-target="waDetails">Telegram Owner <span class="arrow">&#9654;</span></button>
+    <div class="details" id="waDetails">
+      Klik untuk kontak Telegram Owner.
+      <a href="https://t.me/Virzst" class="link-btn" target="_blank">Chat WhatsApp</a>
+    </div>
+
+    <button class="pay-btn" data-target="channelDetails">Channel Owner <span class="arrow">&#9654;</span></button>
+    <div class="details" id="channelDetails">
+      Klik untuk buka Channel.
+      <a href="https://whatsapp.com/channel/0029VbBVcQe9Bb64P11D483K" class="link-btn" target="_blank">Buka Channel</a>
+    </div>
+
+    <button class="pay-btn" data-target="ytDetails">Akun 2 Telegram owner <span class="arrow">&#9654;</span></button>
+    <div class="details" id="ytDetails">
+      Klik untuk kontak 2.
+      <a href="https://t.me/VIRZOFFICIIAL" class="link-btn" target="_blank">Kontak Telegram 2</a>
+    </div>
+
+    <button class="pay-btn" data-target="tgDetails">Chanel Telegram Owner <span class="arrow">&#9654;</span></button>
+    <div class="details" id="tgDetails">
+      Klik untuk buka Channel Telegram.
+      <a href="https://t.me/Virzofficial" class="link-btn" target="_blank">Buka Telegram</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+window.addEventListener('load', () => {
+  const loading = document.getElementById('loadingScreen');
+  const main = document.getElementById('mainContent');
+  const audio = document.getElementById('vibesAudio');
+  const startBtn = document.getElementById('startAudio');
+
+  const startMusic = () => {
+    audio.play().catch(()=>{});
+    startBtn.style.display = 'none';
+  };
+
+  startBtn.addEventListener('click', startMusic);
+
+  setTimeout(() => {
+    loading.style.opacity = '0';
+    setTimeout(() => {
+      loading.style.display = 'none';
+      main.style.display = 'flex';
+      document.body.style.overflow = 'auto';
+      startBtn.click();
+    }, 1000);
+  }, 3500);
+});
+
+document.querySelectorAll('.pay-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetId = btn.getAttribute('data-target');
+    const target = document.getElementById(targetId);
+    const arrow = btn.querySelector('.arrow');
+    document.querySelectorAll('.details').forEach(d => { if (d !== target) d.classList.remove('show'); });
+    document.querySelectorAll('.arrow').forEach(a => { if (a !== arrow) a.classList.remove('rotate'); });
+    target.classList.toggle('show');
+    arrow.classList.toggle('rotate');
+  });
+});
+</script>
+
+</body>
+  </html>
